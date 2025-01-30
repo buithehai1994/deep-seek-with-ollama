@@ -9,8 +9,9 @@ WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y curl unzip && \
-    curl -fsSL https://ollama.com/download/Ollama-linux-amd64 -o /usr/local/bin/ollama && \
-    chmod +x /usr/local/bin/ollama
+    curl -fsSL https://github.com/ollama/ollama/releases/download/v0.1.26/ollama-linux-amd64-v0.1.26.tar.gz -o /ollama.tar.gz && \
+    tar -xzvf /ollama.tar.gz -C /usr/local/bin && \
+    rm /ollama.tar.gz
 
 # Copy only the necessary files
 COPY requirements.txt /requirements.txt
@@ -23,4 +24,4 @@ COPY app /app
 EXPOSE 8000
 
 # Start both Ollama and FastAPI
-CMD ollama serve & uvicorn app.api:app --host 0.0.0.0 --port 8000
+CMD /usr/local/bin/ollama serve & uvicorn app.api:app --host 0.0.0.0 --port 8000
