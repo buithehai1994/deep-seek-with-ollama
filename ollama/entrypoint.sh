@@ -1,12 +1,11 @@
+#!/bin/bash
+set -e
 
-#!/bin/sh
+echo "Starting Ollama server..."
+ollama serve &
+sleep 2  # Wait for the server to start
 
-./bin/ollama serve &
+echo "Ollama server is running. Ready to accept requests."
 
-sleep 5
-
-curl -X POST http://localhost:11434/api/pull -d '{"name": "llama3"}'
-
-sleep 10
-
+# Keep the container running
 tail -f /dev/null
