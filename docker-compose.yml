@@ -1,1 +1,30 @@
+version: "3.8"
+
+services:
+  web:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    ports:
+      - "5005:5005"
+    volumes:
+      - ./app:/app
+    networks:
+      - chatbot-net
+
+  ollama:
+    build:
+      context: ./ollama
+      dockerfile: Dockerfile
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./ollama:/ollama
+    networks:
+      - chatbot-net
+    entrypoint: ["/usr/bin/bash", "pull-llama3.sh"]
+
+networks:
+  chatbot-net:
+    driver: bridge
 
