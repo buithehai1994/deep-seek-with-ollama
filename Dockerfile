@@ -1,27 +1,22 @@
-# Use an official lightweight Python image
-FROM python:3.10-slim
+FROM python:3.11-slim AS base
 
-# Set environment variables
-ENV OLLAMA_VERSION=0.1.26  
+# Install dependencies
+RUN apt-get update -y && apt-get install -y \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Set the working directory
-WORKDIR /app
+# Set working directory
+ENV APP_HOME /app
+WORKDIR $APP_HOME
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y curl unzip && \
-    curl -fsSL https://github.com/ollama/ollama/releases/download/v0.1.26/ollama-linux-amd64-v0.1.26.tar.gz -o /ollama.tar.gz && \
-    tar -xzvf /ollama.tar.gz -C /usr/local/bin && \
-    rm /ollama.tar.gz
+# Copy application code
+COPY . ./
 
-# Copy only the necessary files
-COPY requirements.txt /requirements.txt
-RUN pip install --no-cache-dir -r /requirements.txt
+# Install required Python packages
+RUN pip install -r requirements.txt
 
-# Copy the application code into the container
-COPY app /app
+# Expose the application port
+EXPOSE 5005
 
-# Expose the FastAPI port
-EXPOSE 8000
-
-# Start both Ollama and FastAPI
-CMD /usr/local/bin/ollama serve & uvicorn app.api:app --host 0.0.0.0 --port 8000
+# Command to run FastAPI
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "5005"]
