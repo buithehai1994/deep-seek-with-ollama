@@ -1,13 +1,20 @@
-# Use the official Ollama image as base
-FROM ollama/ollama
+# Dockerfile in /ollama
+FROM ubuntu:20.04
 
-# Set the working directory
-ENV APP_HOME=/home
-WORKDIR $APP_HOME
+# Install necessary dependencies (you can adjust based on your needs)
+RUN apt-get update && apt-get install -y \
+    bash \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy the pull script and make it executable
-COPY pull-llama3.sh .
-RUN chmod +x pull-llama3.sh
+# Copy Ollama-related files
+COPY pull-llama3.sh /ollama/
 
-# Start the Ollama server and pull the llama3.1 model
-ENTRYPOINT ["/usr/bin/bash", "pull-llama3.sh"]
+# Make sure the script is executable
+RUN chmod +x /ollama/pull-llama3.sh
+
+# Set working directory to /ollama
+WORKDIR /ollama
+
+# Command to run the Ollama script
+CMD ["./pull-llama3.sh"]
