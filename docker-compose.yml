@@ -1,13 +1,30 @@
-# In docker-compose.yml
+version: "3.9"
+
 services:
+  # FastAPI app service
   web:
     build:
-      context: ./app
-      dockerfile: Dockerfile
+      context: ./app  # Path to the app directory
+      dockerfile: Dockerfile  # Use the Dockerfile in the app directory
     ports:
-      - "5005:5005"
+      - "5005:5005"  # Expose the FastAPI app port
     volumes:
-      - ./app:/app
+      - ./app:/app  # Mount the app directory
     networks:
       - chatbot-net
-    command: uvicorn api:app --host '0.0.0.0' --port 5005  # Change this line
+    command: uvicorn api:app --host '0.0.0.0' --port 5005  # Point to api.py
+
+  # Ollama service
+  ollama:
+    build:
+      context: ./ollama  # Path to the Ollama directory
+      dockerfile: Dockerfile  # Use the Dockerfile in the Ollama directory
+    volumes:
+      - ./ollama:/ollama  # Mount Ollama directory
+    networks:
+      - chatbot-net
+    command: ./pull-llama3.sh  # Run the Ollama script (adjust as needed)
+
+networks:
+  chatbot-net:
+    driver: bridge
